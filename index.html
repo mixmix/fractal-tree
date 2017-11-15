@@ -1,0 +1,194 @@
+<html>
+  <head>
+    <!-- TODO - make copy min css script? -->
+    <link rel="stylesheet" href="node_modules/nouislider/distribute/nouislider.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+<!-- Todo
+* Refactor code
+* Line colour + Background: need better colour picker ui, including opacity
+* Display nodes but not branches
+* Add screenshot button (or upload to imgur button)
+* different input modes: e.g. text input, or imogen's gloves
+* Different numbers of branches at different depths, e.g. 1, 2, 3, 5, 8
+* Modify relationship between recursive depth and branch length
+* Add animation mode, e.g. for each param, set a range and a rate of change
+* add params to URL to make patterns shareable
+* add random generator
+* add genetic breeding
+
+ -->
+
+  </head>
+
+<body id="body">
+  <script>
+    (function() {
+      var meta = document.createElement("meta");
+      meta.setAttribute('name','viewport');
+      var content = 'initial-scale=';
+      content += 2 / window.devicePixelRatio;
+      content += ',user-scalable=no';
+      meta.setAttribute('content', content);
+      document.getElementsByTagName('head')[0].appendChild(meta);
+    })();
+  </script>
+  <div id="input-mask"></div>
+
+  <div id='canvasContainer'>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div id="controls">
+    <button id="keybindings">Keyboard shortcuts</button>
+    <button id="toggleControls">Hide controls</button>
+    <div id="controlsWrapper">
+
+      <div id="sliderControls">
+        <div class="sliderLabels">Repeats</div><div class="sliders" id="repeats"></div>
+        <div class="sliderLabels">Depth</div><div class="sliders" id="depth"></div>
+        <div class="sliderLabels">Angle</div><div class="sliders" id="offset"></div>
+        <div class="sliderLabels">Size</div><div class="sliders" id="size"></div>
+        <div class="sliderLabels">Skew</div><div class="sliders" id="skew"></div>
+        <div class="sliderLabels">Opacity</div><div class="sliders" id="opacity"></div>
+      </div>
+
+      <div id="colorControls">
+        <div id="lineColor">
+          Line
+          <div class="color-input" id="color-input-1"></div>
+          <div class="color-picker" id="color-picker-1">
+            <canvas class="color-block" id="color-block-1" height="150" width="150"></canvas>
+            <canvas class="color-strip" id="color-strip-1" height="150" width="30"></canvas>
+          </div>
+        </div>
+        <div id="groundColor">
+          Ground
+          <div class="color-input" id="color-input-2"></div>
+          <div class="color-picker" id="color-picker-2">
+            <canvas class="color-block" id="color-block-2" height="150" width="150"></canvas>
+            <canvas class="color-strip" id="color-strip-2" height="150" width="30"></canvas>
+          </div>
+        </div>
+      </div>
+      <div id="buttonControls">
+        <button id="presetBtnA">Preset A</button>
+        <button id="presetBtnB">Preset B</button>
+        <button id="presetBtnC">Preset C</button>
+        <button id="presetBtnD">Preset D</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="nouislider/nouislider.min.js"></script>
+
+  <script src="js/color-picker.js"></script>
+  <script src="js/mousetrap.min.js"></script>
+
+
+  <script type="text/javascript">
+    // TODO - enable this whole section
+    // INIT KEYBINDINGS
+
+    <!-- Mousetrap.bind('q', function() { incSlider(0); }); -->
+    <!-- Mousetrap.bind('w', function() { incSlider(1); }); -->
+    <!-- Mousetrap.bind('e', function() { incSlider(2); }); -->
+    <!-- Mousetrap.bind('r', function() { incSlider(3); }); -->
+    <!-- Mousetrap.bind('t', function() { incSlider(4); }); -->
+    <!-- Mousetrap.bind('y', function() { incSlider(5); }); -->
+    <!-- Mousetrap.bind('a', function() { decSlider(0); }); -->
+    <!-- Mousetrap.bind('s', function() { decSlider(1); }); -->
+    <!-- Mousetrap.bind('d', function() { decSlider(2); }); -->
+    <!-- Mousetrap.bind('f', function() { decSlider(3); }); -->
+    <!-- Mousetrap.bind('g', function() { decSlider(4); }); -->
+    <!-- Mousetrap.bind('h', function() { decSlider(5); }); -->
+
+    <!-- Mousetrap.bind('1', function() { loadPreset(0); }); -->
+    <!-- Mousetrap.bind('2', function() { loadPreset(1); }); -->
+    <!-- Mousetrap.bind('3', function() { loadPreset(2); }); -->
+    <!-- Mousetrap.bind('4', function() { loadPreset(3); }); -->
+
+    function incSlider(index){
+      console.log('inc. index:' + index)
+      sliders[index].noUiSlider.set(Number(sliders[index].noUiSlider.get()) + sliders[index].noUiSlider.options.step);
+      drawTreeFromSliders()
+    }
+
+    function decSlider(index){
+      console.log('dec. index:' + index)
+      sliders[index].noUiSlider.set(Number(sliders[index].noUiSlider.get()) - sliders[index].noUiSlider.options.step);
+      drawTreeFromSliders()
+    }
+
+    var preset = [
+      {repeats: 1, depth: 10, offset: 14, size: 6, skew: 7, opacity: 1}
+    , {repeats: 2, depth: 9, offset: 44, size: 6, skew: -26, opacity: 1}
+    , {repeats: 6, depth: 14, offset: 60, size: 20, skew: 0, opacity: 0.13}
+    , {repeats: 5, depth: 9, offset: 180, size: 20, skew: -60, opacity: 0.25}
+    ];
+
+    document.getElementById('keybindings').addEventListener('click', function(){
+      alert("Keybindings:\nPress 1-4 keys for presets.\nMove slider 1 with Q+A, slider 2 with W+A, etc.");
+    });
+
+
+
+    function loadPreset(index){
+      sliders["repeats"].noUiSlider.set(preset[index].repeats);
+      sliders["depth"].noUiSlider.set(preset[index].depth);
+      sliders["offset"].noUiSlider.set(preset[index].offset);
+      sliders["size"].noUiSlider.set(preset[index].size);
+      sliders["skew"].noUiSlider.set(preset[index].skew);
+      sliders["opacity"].noUiSlider.set(preset[index].opacity);
+
+      drawTreeFromSliders()
+    }
+
+    var toggle = true;
+
+    document.getElementById('toggleControls').addEventListener('click', function(){
+      if(toggle){
+        document.getElementById('controlsWrapper').style.setProperty('display', 'none');
+        document.getElementById('toggleControls').innerHTML = "Show";
+        toggle = false;
+      }
+      else{
+        document.getElementById('controlsWrapper').style.setProperty('display', 'block');
+        document.getElementById('toggleControls').innerHTML = "Hide";
+        toggle = true;
+      }
+    });
+
+    document.getElementById('presetBtnA').addEventListener('click', function(){
+      loadPreset(0)
+    });
+
+    document.getElementById('presetBtnB').addEventListener('click', function(){
+      loadPreset(1)
+    });
+
+    document.getElementById('presetBtnC').addEventListener('click', function(){
+      loadPreset(2)
+    });
+
+    document.getElementById('presetBtnD').addEventListener('click', function(){
+      loadPreset(4)
+    });
+
+    function drawTreeFromSliders(){
+      repeats = Number(sliders["repeats"].noUiSlider.get());
+      depth = sliders["depth"].noUiSlider.get();
+      offset = Number(sliders["offset"].noUiSlider.get());
+      size = sliders["size"].noUiSlider.get();
+      height = width = size;
+      skew = Number(sliders["skew"].noUiSlider.get());
+      context.globalAlpha = Number(sliders["opacity"].noUiSlider.get());
+      context.strokeStyle = rgbaColor;
+      drawNewTree(rootX, rootY, -90, depth);
+    }
+
+  </script>
+
+    <script src='./build.js'></script>
+  </body>
+</html>

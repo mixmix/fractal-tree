@@ -1,0 +1,22 @@
+{
+  "name": "fractal-tree",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js > build.js",
+    "watch": "watchify  index.js -o build.js -dv"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^14.5.0"
+  },
+  "dependencies": {
+    "mousetrap": "^1.6.1",
+    "nouislider": "^10.1.0",
+    "watchify": "^3.9.0"
+  }
+}

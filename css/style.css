@@ -1,0 +1,89 @@
+body{
+  margin: 0;
+  font-family: sans-serif;
+  background: #000;
+}
+#canvas{
+  height: 100vh;
+  width: 100wh;
+}
+#controls {
+  width: 300px;
+  margin: 0 auto;
+  padding: 10px;
+  background: rgba(150,150,150,0.7);
+}
+@media (min-width: 500px){
+  #controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+}
+.sliders {
+  margin: 5px;
+  display: inline-block;
+  width: 200px;
+  height: 20px;
+}
+.sliderLabels{
+  height: 30px;
+  width: 70px;
+  vertical-align: middle;
+  display: inline-block;
+}
+.noUi-tooltip{
+  padding: 2px;
+  font-size: 8px;
+}
+:focus{
+  outline: none !important;
+}
+
+#toggleControls{float: right;}
+
+#colorControls{
+  position: relative;
+  height: 40px;
+}
+#lineColor{
+  position: absolute;
+  left: 0px;
+  top: 10px;
+}
+#groundColor{
+  position: absolute;
+  left: 110px;
+  top: 10px;
+}
+.color-input {
+  position: absolute;
+  top: 0;
+  left: 75px;
+  height: 20px;
+  width: 20px;
+  background: white;
+  z-index: 10;
+}
+#color-input-2{
+  background: black;
+}
+.color-picker {
+  position: absolute;
+  bottom: 0;
+  left: 100px;
+  height: 150px;
+  width: 185px;
+  border: solid 1px #ccc;
+  padding: 5px;
+  display: none;
+  background: white;
+  z-index: 11;
+}
+#input-mask{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 9;
+  display: none;
+}
